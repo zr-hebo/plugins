@@ -189,7 +189,9 @@ func (pm *PackMessage) ToRecordMessages() []*RecordMessage {
 					TableName:   sheet.TableName,
 					EventTime:   sheet.EventTime,
 					ReceiveTime: sheet.ReceiveTime,
-					SQL:         sheet.Statement.SQL,
+				}
+				if sheet.Statement != nil {
+					newRow.SQL = sheet.Statement.SQL
 				}
 				if row.BeforeVals != nil {
 					newRow.BeforeRowImage = mapKeyValue(sheet.Columns, row.BeforeVals.Vals)
@@ -226,8 +228,7 @@ func (pm *PackMessage) ToPanamaMessages() []*PanamaMessage {
 		} else {
 			for _, row := range sheet.Rows {
 				idx += 1
-
-				pms = append(pms, &PanamaMessage{
+				newRow := &PanamaMessage{
 					UUID:          uuid.New().String(),
 					ID:            createPanamaEventID(pm.XID, idx),
 					SQLType:       sheet.SQLType,
@@ -235,9 +236,12 @@ func (pm *PackMessage) ToPanamaMessages() []*PanamaMessage {
 					EventTime:     pm.EventTime / 1000,
 					ReceiveTime:   sheet.ReceiveTime / 1000,
 					FieldNum:      uint16(len(sheet.Columns)),
-					OldRow:        convertMySQLRowToPanama(row.BeforeVals.Vals),
-					NewRow:        convertMySQLRowToPanama(row.AfterVals.Vals),
-				})
+				}
+				if row.BeforeVals != nil {
+					newRow.OldRow = convertMySQLRowToPanama(row.BeforeVals.Vals)
+					newRow.NewRow = convertMySQLRowToPanama(row.AfterVals.Vals)
+				}
+				pms = append(pms, newRow)
 			}
 		}
 	}
