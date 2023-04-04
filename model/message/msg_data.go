@@ -89,16 +89,20 @@ func (st *Sheet) AlignNewRecord(record map[string]interface{}, rowData *RowData)
 func (st *Sheet) ArrangeRows() {
 	for _, row := range st.Rows {
 		record := make(map[string]interface{}, len(st.Columns))
-		for idx := range st.Columns {
-			record[st.Columns[idx].Name] = row.BeforeVals.Vals[idx]
+		if row.BeforeVals != nil {
+			for idx := range st.Columns {
+				record[st.Columns[idx].Name] = row.BeforeVals.Vals[idx]
+			}
+			row.BeforeVals.KVPairs = record
 		}
-		row.BeforeVals.KVPairs = record
 
-		record = make(map[string]interface{}, len(st.Columns))
-		for idx := range st.Columns {
-			record[st.Columns[idx].Name] = row.AfterVals.Vals[idx]
+		if row.AfterVals != nil {
+			record = make(map[string]interface{}, len(st.Columns))
+			for idx := range st.Columns {
+				record[st.Columns[idx].Name] = row.AfterVals.Vals[idx]
+			}
+			row.AfterVals.KVPairs = record
 		}
-		row.AfterVals.KVPairs = record
 	}
 	return
 }
