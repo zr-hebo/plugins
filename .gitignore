@@ -1,0 +1,11 @@
+.idea/
+*.log
+*.swp
+*.bak
+bin
+*.INFO
+*.INFO.*
+nohup.out
+*.db
+*.csv
+bootstrap_*
