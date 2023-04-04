@@ -182,18 +182,20 @@ func (pm *PackMessage) ToRecordMessages() []*RecordMessage {
 		} else {
 			for _, row := range sheet.Rows {
 				idx += 1
-
-				rms = append(rms, &RecordMessage{
-					RecordID:       fmt.Sprintf("%s#%d#%d", pm.XID, pm.BatchNumber, idx),
-					SQLType:        sheet.SQLType,
-					DBName:         sheet.DBName,
-					TableName:      sheet.TableName,
-					EventTime:      sheet.EventTime,
-					ReceiveTime:    sheet.ReceiveTime,
-					BeforeRowImage: mapKeyValue(sheet.Columns, row.BeforeVals.Vals),
-					AfterRowImage:  mapKeyValue(sheet.Columns, row.AfterVals.Vals),
-					SQL:            sheet.Statement.SQL,
-				})
+				newRow := &RecordMessage{
+					RecordID:    fmt.Sprintf("%s#%d#%d", pm.XID, pm.BatchNumber, idx),
+					SQLType:     sheet.SQLType,
+					DBName:      sheet.DBName,
+					TableName:   sheet.TableName,
+					EventTime:   sheet.EventTime,
+					ReceiveTime: sheet.ReceiveTime,
+					SQL:         sheet.Statement.SQL,
+				}
+				if row.BeforeVals != nil {
+					newRow.BeforeRowImage = mapKeyValue(sheet.Columns, row.BeforeVals.Vals)
+					newRow.AfterRowImage = mapKeyValue(sheet.Columns, row.AfterVals.Vals)
+				}
+				rms = append(rms, newRow)
 			}
 		}
 	}
